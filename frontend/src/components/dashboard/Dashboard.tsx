@@ -81,8 +81,8 @@ export function Dashboard() {
   };
 
   const handleNavigateTo = (section: string) => {
-    window.location.hash = `#${section}`;
-    window.location.reload();
+    // Usar el sistema de navegación
+    window.dispatchEvent(new CustomEvent('navigate', { detail: section }));
   };
 
   const handleNewSale = () => {

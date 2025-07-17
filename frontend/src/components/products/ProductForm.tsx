@@ -49,7 +49,29 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Validar campos requeridos
+    if (!formData.nombre || !formData.sku || !formData.categoria.id || !formData.precio || !formData.stock) {
+      alert('Por favor completa todos los campos requeridos');
+      return;
+    }
+    
+    // Preparar datos para el backend
+    const productData = {
+      nombre: formData.nombre,
+      sku: formData.sku,
+      descripcion: formData.descripcion,
+      marca: formData.marca,
+      precio: parseFloat(formData.precio.toString()),
+      costo: parseFloat(formData.costo?.toString() || '0'),
+      stock: parseInt(formData.stock.toString()),
+      stockMinimo: parseInt(formData.stockMinimo?.toString() || '5'),
+      imagen: formData.imagen,
+      categoria: { id: formData.categoria.id },
+      activo: formData.activo
+    };
+    
+    onSubmit(productData);
   };
 
   return (

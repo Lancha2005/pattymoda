@@ -107,6 +107,12 @@ export function CategoryList() {
 
   const handleSaveCategory = async (categoryData: any) => {
     try {
+      // Validar campos requeridos
+      if (!categoryData.nombre) {
+        alert('El nombre de la categoría es requerido');
+        return;
+      }
+      
       if (selectedCategory) {
         await CategoryService.updateCategory(selectedCategory.id, categoryData);
       } else {

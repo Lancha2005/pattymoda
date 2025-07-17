@@ -126,6 +126,12 @@ export function CustomerList() {
 
   const handleSaveCustomer = async (customerData: any) => {
     try {
+      // Validar campos requeridos
+      if (!customerData.nombre || !customerData.email) {
+        alert('Nombre y email son campos requeridos');
+        return;
+      }
+      
       if (selectedCustomer) {
         await CustomerService.updateCustomer(selectedCustomer.id, customerData);
       } else {

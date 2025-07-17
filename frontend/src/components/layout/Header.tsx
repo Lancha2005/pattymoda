@@ -64,8 +64,12 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
   };
 
   const handleNewSale = () => {
-    window.location.hash = '#new-sale';
-    window.location.reload();
+    // Usar el sistema de navegación del componente padre
+    if (window.location.pathname === '/') {
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'new-sale' }));
+    } else {
+      window.location.href = '/#new-sale';
+    }
   };
 
   const handleExportData = () => {
@@ -81,7 +85,9 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
     const a = document.createElement('a');
     a.href = url;
     a.download = `dpattymoda-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
   return (

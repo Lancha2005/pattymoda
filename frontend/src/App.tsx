@@ -28,6 +28,18 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
+  // Escuchar eventos de navegación del header
+  useEffect(() => {
+    const handleNavigate = (event: any) => {
+      if (hasPermission(event.detail)) {
+        setActiveTab(event.detail);
+      }
+    };
+    
+    window.addEventListener('navigate', handleNavigate);
+    return () => window.removeEventListener('navigate', handleNavigate);
+  }, [hasPermission]);
+
   // Detectar si estamos en la página de reset password
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get('token');
