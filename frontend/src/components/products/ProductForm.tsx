@@ -110,7 +110,6 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
                   <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                 ))}
               </select>
-              </select>
             </div>
             
             <Input

@@ -10,7 +10,8 @@ import {
   Store,
   Plus,
   BarChart3,
-  Settings
+  Settings,
+  Activity
 } from 'lucide-react';
 import { StatsCard } from './StatsCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
