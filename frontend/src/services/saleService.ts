@@ -12,7 +12,12 @@ export class SaleService {
   }
 
   static async createSale(sale: Omit<Sale, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Sale>> {
-    return apiService.post<Sale>('/ventas', sale);
+    // Mapear los datos al formato esperado por el backend
+    const saleData = {
+      clienteId: (sale as any).clienteId,
+      productos: (sale as any).productos || []
+    };
+    return apiService.post<Sale>('/ventas', saleData);
   }
 
   static async updateSale(id: string, sale: Partial<Sale>): Promise<ApiResponse<Sale>> {

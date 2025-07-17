@@ -7,6 +7,7 @@ import { Modal } from '../ui/Modal';
 import { TaxService } from '../../services/taxService';
 import { ProductService } from '../../services/productService';
 import { CustomerService } from '../../services/customerService';
+import { SaleService } from '../../services/saleService';
 
 interface Product {
   id: string;
@@ -201,57 +202,37 @@ export function NewSale() {
     { value: 'transfer', label: '🏦 Transferencia', icon: '🏦' },
   ];
 
-  const handleCompleteSale = () => {
-    if (!selectedCustomer) {
-      alert('Debe seleccionar un cliente');
-      return;
-    }
-    
-    if (saleItems.length === 0) {
-      alert('Debe agregar al menos un producto');
-      return;
-    }
-    
-    if (totalPaid < total) {
-      alert('El monto pagado es insuficiente');
-      return;
-    }
-
-    // Preparar datos para el backend
-    const saleData = {
-      clienteId: selectedCustomer.id,
-      productos: saleItems.map(item => ({
-        productoId: item.product.id,
-        cantidad: item.quantity
-      })),
-      subtotal: subtotal,
-      descuento: discountAmount,
-      impuesto: tax,
-      total: total,
-      metodoPago: paymentMethods[0].type.toUpperCase(),
-      notas: `Pago: ${paymentMethods.map(p => `${p.type}: S/${p.amount}`).join(', ')}`
-    };
-    
-    // Aquí deberías llamar al servicio de ventas
-    console.log('Datos de venta para enviar:', saleData);
-    
-    // Limpiar formulario
-    setSaleItems([]);
-    setSelectedCustomer(null);
-    setCustomerSearchTerm('');
-    setPaymentMethods([{ type: 'cash', amount: 0 }]);
-    setDiscount(0);
-    
-    // Mostrar mensaje de éxito con detalles
-    const message = `
-      ¡Venta registrada exitosamente!
+  const handleCompleteSale = async () => {
+    try {
+      // Preparar datos para el backend
+      const saleData = {
+        clienteId: selectedCustomer.id,
+        productos: saleItems.map(item => ({
+          productoId: item.product.id,
+          cantidad: item.quantity
+        }))
+      };
       
-      Cliente: ${selectedCustomer.nombre} ${selectedCustomer.apellido}
-      Total: S/ ${total.toFixed(2)}
-      Vuelto: S/ ${change.toFixed(2)}
-    `;
-    
-    alert('Venta registrada exitosamente');
+      // Crear la venta
+      await SaleService.createSale(saleData as any);
+      
+      // Mostrar mensaje de éxito
+      alert(`¡Venta registrada exitosamente!
+      
+Cliente: ${selectedCustomer.nombre} ${selectedCustomer.apellido}
+Total: S/ ${total.toFixed(2)}
+Vuelto: S/ ${change.toFixed(2)}`);
+      
+      // Limpiar formulario
+      setSaleItems([]);
+      setSelectedCustomer(null);
+      setCustomerSearchTerm('');
+      setPaymentMethods([{ type: 'cash', amount: 0 }]);
+      setDiscount(0);
+      
+    } catch (error: any) {
+      alert('Error al registrar la venta: ' + (error.message || 'Error desconocido'));
+    }
   };
 
   const handleCreateCustomer = async () => {

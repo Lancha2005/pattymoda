@@ -59,12 +59,23 @@ public class VentaController {
     
     @PostMapping
     @Operation(summary = "Crear venta", description = "Registra una nueva venta")
+    @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
     public ResponseEntity<Venta> crearVenta(@Valid @RequestBody VentaRequest ventaRequest) {
         try {
             Venta nuevaVenta = ventaService.crearVenta(ventaRequest);
-            return ResponseEntity.ok(nuevaVenta);
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", nuevaVenta);
+            response.put("message", "Venta creada exitosamente");
+            response.put("status", 201);
+            response.put("timestamp", java.time.LocalDateTime.now());
+            return ResponseEntity.status(201).body(nuevaVenta);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("data", null);
+            errorResponse.put("message", "Error al crear venta: " + e.getMessage());
+            errorResponse.put("status", 400);
+            errorResponse.put("timestamp", java.time.LocalDateTime.now());
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

@@ -124,12 +124,6 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
             {/* Quick Actions */}
             <div className="hidden lg:flex items-center space-x-2">
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-yellow-600">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-gray-600 hover:text-yellow-600"
-                onClick={handleNewSale}
-              >
                 <Zap className="w-4 h-4 mr-1" />
                 Nueva Venta
               </Button>
@@ -183,7 +177,10 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
               
               {/* Dropdown de notificaciones */}
               {isNotificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div 
+                  className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="p-4 border-b border-gray-200">
                     <h3 className="font-semibold text-gray-900">Notificaciones</h3>
                   </div>
@@ -203,13 +200,26 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
                     ))}
                   </div>
                   <div className="p-4 border-t border-gray-200">
-                    <Button variant="ghost" size="sm" className="w-full">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => setIsNotificationsOpen(false)}
+                    >
                       Ver todas las notificaciones
                     </Button>
                   </div>
                 </div>
               )}
             </div>
+            
+            {/* Cerrar dropdown al hacer click fuera */}
+            {isNotificationsOpen && (
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setIsNotificationsOpen(false)}
+              />
+            )}
 
             {/* User Profile */}
             <div className="flex items-center space-x-3">

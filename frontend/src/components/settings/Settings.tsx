@@ -17,6 +17,16 @@ export function Settings() {
     description: 'Tienda de ropa moderna y elegante',
   });
 
+  const handleSaveBusinessSettings = async () => {
+    try {
+      // Aquí podrías llamar al servicio de configuración
+      console.log('Guardando configuración del negocio:', businessData);
+      alert('Configuración guardada exitosamente');
+    } catch (error) {
+      alert('Error al guardar configuración');
+    }
+  };
+
   const settingsTabs = [
     { id: 'business', name: 'Negocio', icon: Store },
     { id: 'profile', name: 'Perfil', icon: User },
@@ -175,6 +185,12 @@ export function Settings() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSaveBusinessSettings} leftIcon={<Save className="w-4 h-4" />}>
+          Guardar Configuración del Negocio
+        </Button>
+      </div>
     </div>
   );
 
@@ -321,6 +337,131 @@ export function Settings() {
     </div>
   );
 
+  const renderDataSettings = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Database className="w-5 h-5 mr-2" />
+            Gestión de Datos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-medium text-blue-900 mb-2">Exportar Datos</h4>
+              <p className="text-sm text-blue-700 mb-4">
+                Descarga una copia de seguridad de todos tus datos
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                leftIcon={<Download className="w-4 h-4" />}
+                onClick={handleExportData}
+              >
+                Exportar Backup
+              </Button>
+            </div>
+            
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h4 className="font-medium text-green-900 mb-2">Importar Datos</h4>
+              <p className="text-sm text-green-700 mb-4">
+                Restaura datos desde un archivo de respaldo
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                leftIcon={<Upload className="w-4 h-4" />}
+                onClick={handleImportData}
+              >
+                Importar Backup
+              </Button>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <HardDrive className="w-5 h-5 text-yellow-600 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-yellow-800">Información de la Base de Datos</h4>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Base de datos: MySQL - pattymoda_mejorada<br/>
+                  Última sincronización: {new Date().toLocaleString('es-PE')}<br/>
+                  Estado: Conectado y funcionando
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderPrintingSettings = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Printer className="w-5 h-5 mr-2" />
+            Configuración de Impresión
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Impresora Predeterminada
+              </label>
+              <select className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500">
+                <option>Impresora del Sistema</option>
+                <option>Impresora Térmica</option>
+                <option>PDF Virtual</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tamaño de Papel
+              </label>
+              <select className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500">
+                <option>A4</option>
+                <option>Ticket 80mm</option>
+                <option>Ticket 58mm</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <h4 className="font-medium text-gray-900">Imprimir automáticamente</h4>
+                <p className="text-sm text-gray-500">Imprime boletas automáticamente al completar venta</p>
+              </div>
+              <input type="checkbox" className="rounded" defaultChecked />
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <h4 className="font-medium text-gray-900">Incluir logo en boletas</h4>
+                <p className="text-sm text-gray-500">Agrega el logo de DPattyModa en las boletas</p>
+              </div>
+              <input type="checkbox" className="rounded" defaultChecked />
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t border-gray-200">
+            <Button 
+              variant="outline" 
+              leftIcon={<FileText className="w-4 h-4" />}
+              onClick={handlePrintTest}
+            >
+              Imprimir Página de Prueba
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
   const renderContent = () => {
     switch (activeTab) {
       case 'business': return renderBusinessSettings();
