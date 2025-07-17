@@ -56,13 +56,21 @@ class ApiService {
       }
 
       // Normalizar la respuesta para que siempre tenga la estructura esperada
-      if (typeof data === 'object' && data !== null && 'data' in data) {
+      if (typeof data === 'object' && data !== null && data.hasOwnProperty('data')) {
         return data;
       } else {
-        return { data: data, message: 'Success', status: response.status, timestamp: new Date() };
+        return { 
+          data: data, 
+          message: 'Success', 
+          status: response.status, 
+          timestamp: new Date().toISOString() 
+        };
       }
     } catch (error) {
       console.error('API Error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
       throw error;
     }
   }

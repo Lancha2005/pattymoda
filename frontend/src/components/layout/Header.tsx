@@ -124,6 +124,12 @@ export function Header({ onToggleSidebar, onLogout, user }: HeaderProps) {
             {/* Quick Actions */}
             <div className="hidden lg:flex items-center space-x-2">
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-yellow-600">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-600 hover:text-yellow-600"
+                onClick={handleNewSale}
+              >
                 <Zap className="w-4 h-4 mr-1" />
                 Nueva Venta
               </Button>

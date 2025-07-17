@@ -217,17 +217,23 @@ export function NewSale() {
       return;
     }
 
-    console.log('Venta completada:', {
-      customer: selectedCustomer,
-      items: saleItems,
-      paymentMethods,
-      subtotal,
-      discount: discountAmount,
-      tax,
-      total,
-      totalPaid,
-      change
-    });
+    // Preparar datos para el backend
+    const saleData = {
+      clienteId: selectedCustomer.id,
+      productos: saleItems.map(item => ({
+        productoId: item.product.id,
+        cantidad: item.quantity
+      })),
+      subtotal: subtotal,
+      descuento: discountAmount,
+      impuesto: tax,
+      total: total,
+      metodoPago: paymentMethods[0].type.toUpperCase(),
+      notas: `Pago: ${paymentMethods.map(p => `${p.type}: S/${p.amount}`).join(', ')}`
+    };
+    
+    // Aquí deberías llamar al servicio de ventas
+    console.log('Datos de venta para enviar:', saleData);
     
     // Limpiar formulario
     setSaleItems([]);
@@ -235,6 +241,15 @@ export function NewSale() {
     setCustomerSearchTerm('');
     setPaymentMethods([{ type: 'cash', amount: 0 }]);
     setDiscount(0);
+    
+    // Mostrar mensaje de éxito con detalles
+    const message = `
+      ¡Venta registrada exitosamente!
+      
+      Cliente: ${selectedCustomer.nombre} ${selectedCustomer.apellido}
+      Total: S/ ${total.toFixed(2)}
+      Vuelto: S/ ${change.toFixed(2)}
+    `;
     
     alert('Venta registrada exitosamente');
   };

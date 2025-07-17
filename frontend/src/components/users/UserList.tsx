@@ -91,6 +91,17 @@ export function UserList() {
 
   const handleSaveUser = async (userData: any) => {
     try {
+      // Validar campos requeridos
+      if (!userData.nombre || !userData.email) {
+        alert('Nombre y email son campos requeridos');
+        return;
+      }
+      
+      if (!selectedUser && !userData.password) {
+        alert('La contraseña es requerida para nuevos usuarios');
+        return;
+      }
+      
       if (selectedUser) {
         await UserService.updateUser(selectedUser.id, userData);
       } else {
