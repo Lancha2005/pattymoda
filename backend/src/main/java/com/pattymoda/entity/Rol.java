@@ -1,7 +1,6 @@
 package com.pattymoda.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "roles")
@@ -62,4 +61,4 @@ public class Rol extends BaseEntity {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
-} 
+}

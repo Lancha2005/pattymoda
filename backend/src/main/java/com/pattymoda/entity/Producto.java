@@ -92,4 +92,14 @@ public class Producto extends BaseEntity {
 
     @Column(name = "activo")
     private Boolean activo = true;
-} 
+
+    // Campos adicionales para el stock (si no tienes tabla separada)
+    @Column(name = "stock_actual")
+    private Integer stockActual = 0;
+
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo = 0;
+
+    @Column(name = "stock_maximo")
+    private Integer stockMaximo = 0;
+}

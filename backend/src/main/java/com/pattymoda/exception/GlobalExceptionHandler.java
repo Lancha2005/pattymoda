@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Business Error")
                 .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
                 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND.value())
                 .error("Resource Not Found")
                 .message(ex.getMessage())
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
                 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Validation Failed")
                 .message("Los datos proporcionados no son válidos")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .validationErrors(errors)
                 .build();
 
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Constraint Violation")
                 .message("Los datos no cumplen con las restricciones")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .validationErrors(errors)
                 .build();
 
@@ -116,10 +116,14 @@ public class GlobalExceptionHandler {
         logger.error("Data integrity violation: {}", ex.getMessage());
         
         String message = "Error de integridad de datos";
-        if (ex.getMessage().contains("Duplicate entry")) {
-            message = "Ya existe un registro con estos datos";
-        } else if (ex.getMessage().contains("foreign key constraint")) {
-            message = "No se puede eliminar el registro porque está siendo utilizado";
+        if (ex.getMessage() != null) {
+            if (ex.getMessage().contains("Duplicate entry")) {
+                message = "Ya existe un registro con estos datos";
+            } else if (ex.getMessage().contains("foreign key constraint")) {
+                message = "No se puede eliminar el registro porque está siendo utilizado";
+            } else if (ex.getMessage().contains("cannot be null")) {
+                message = "Faltan datos obligatorios";
+            }
         }
 
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
@@ -127,7 +131,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT.value())
                 .error("Data Integrity Error")
                 .message(message)
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
@@ -137,12 +141,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         logger.warn("Authentication error: {}", ex.getMessage());
         
+        String message = "Credenciales inválidas";
+        if (ex instanceof BadCredentialsException) {
+            message = "Email o contraseña incorrectos";
+        }
+        
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error("Authentication Failed")
-                .message("Credenciales inválidas")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .message(message)
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
@@ -157,7 +166,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN.value())
                 .error("Access Denied")
                 .message("No tienes permisos para acceder a este recurso")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
@@ -172,7 +181,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.METHOD_NOT_ALLOWED.value())
                 .error("Method Not Allowed")
                 .message("Método HTTP no soportado: " + ex.getMethod())
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
@@ -182,12 +191,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
         logger.warn("Message not readable: {}", ex.getMessage());
         
+        String message = "El formato JSON no es válido";
+        if (ex.getMessage() != null && ex.getMessage().contains("JSON parse error")) {
+            message = "Error en el formato JSON enviado";
+        }
+        
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Malformed JSON")
-                .message("El formato JSON no es válido")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .message(message)
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -202,7 +216,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Type Mismatch")
                 .message("Tipo de dato incorrecto para el parámetro: " + ex.getName())
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -217,7 +231,22 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Missing Parameter")
                 .message("Parámetro requerido faltante: " + ex.getParameterName())
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
+                .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        logger.warn("Illegal argument: {}", ex.getMessage());
+        
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Invalid Argument")
+                .message(ex.getMessage())
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -232,9 +261,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
                 .message("Ha ocurrido un error interno del servidor")
-                .path(request.getDescription(false).replace("uri=", ""))
+                .path(getPath(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    private String getPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
     }
 }
